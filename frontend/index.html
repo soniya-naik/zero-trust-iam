@@ -1,0 +1,288 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zero Trust IAM | Secure Access</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            color: #eaf0ff;
+            background:
+                radial-gradient(ellipse at top left, #193c70 0%, transparent 45%),
+                linear-gradient(135deg, #07111f, #101c32 60%, #07111f);
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 440px;
+            padding: 38px;
+            border: 1px solid #30425f;
+            border-radius: 20px;
+            background: rgba(15, 28, 49, 0.96);
+            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .brand-icon {
+            display: grid;
+            place-items: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: #173d68;
+            color: #64d9ff;
+            font-size: 25px;
+        }
+
+        .brand h2 {
+            font-size: 19px;
+            letter-spacing: 0.3px;
+        }
+
+        .brand p {
+            margin-top: 4px;
+            color: #9aacc8;
+            font-size: 12px;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 11px;
+            margin-bottom: 22px;
+            border: 1px solid #24544f;
+            border-radius: 30px;
+            color: #8bf0ce;
+            background: #102c2c;
+            font-size: 12px;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #55e0b2;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: 30px;
+            letter-spacing: -0.7px;
+        }
+
+        .subtitle {
+            margin-bottom: 28px;
+            color: #9aacc8;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #dce6f7;
+            font-size: 13px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px 14px;
+            margin-bottom: 19px;
+            border: 1px solid #354761;
+            border-radius: 9px;
+            outline: none;
+            color: white;
+            background: #0b1729;
+            font-size: 14px;
+        }
+
+        input:focus {
+            border-color: #53bfff;
+            box-shadow: 0 0 0 3px rgba(83, 191, 255, 0.12);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 9px;
+            color: #061424;
+            background: linear-gradient(90deg, #65d9f8, #7aa8ff);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            opacity: 0.92;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        #message {
+            margin-top: 16px;
+            font-size: 13px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .security-note {
+            margin-top: 27px;
+            padding-top: 20px;
+            border-top: 1px solid #293951;
+            color: #91a3bd;
+            font-size: 12px;
+            line-height: 1.7;
+            text-align: center;
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 26px 22px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="login-card">
+        <div class="brand">
+            <div class="brand-icon">⬡</div>
+            <div>
+                <h2>ZERO TRUST IAM</h2>
+                <p>Identity & Access Management Proxy</p>
+            </div>
+        </div>
+
+        <div class="status">
+            <span class="status-dot"></span>
+            Secure access portal
+        </div>
+
+        <h1>Welcome back</h1>
+        <p class="subtitle">
+            Sign in to verify your identity and access the security dashboard.
+        </p>
+
+        <form id="loginForm">
+            <label for="username">Username</label>
+            <input
+                id="username"
+                name="username"
+                type="text"
+                placeholder="Enter your username"
+                autocomplete="username"
+                required
+            >
+
+            <label for="password">Password</label>
+            <input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required
+            >
+
+            <button id="loginButton" type="submit">
+                Verify & Sign In →
+            </button>
+
+            <p id="message" role="status" aria-live="polite"></p>
+        </form>
+
+        <div class="security-note">
+            🔒 Protected by identity verification and risk-based access policies.
+            <br>
+            Never Trust, Always Verify.
+        </div>
+    </main>
+
+    <script>
+        const form = document.getElementById("loginForm");
+        const message = document.getElementById("message");
+        const button = document.getElementById("loginButton");
+
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            message.textContent = "";
+            message.style.color = "#ffb7b7";
+            button.disabled = true;
+            button.textContent = "Verifying identity...";
+
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value;
+
+            try {
+                const response = await fetch(
+                    "http://127.0.0.1:5000/api/login",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ username, password })
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || "Login failed.");
+                }
+
+                // Keep the token for this browser tab only.
+                sessionStorage.setItem("zt_token", data.token);
+                sessionStorage.setItem("zt_username", data.user.username);
+                sessionStorage.setItem("zt_role", data.user.role);
+
+                message.style.color = "#8bf0ce";
+                message.textContent = "Identity verified. Opening dashboard...";
+
+                window.location.href = "dashboard.html";
+
+            } catch (error) {
+                message.textContent =
+                    error.message === "Failed to fetch"
+                        ? "Cannot connect to the backend. Make sure Flask is running."
+                        : error.message;
+            } finally {
+                button.disabled = false;
+                button.textContent = "Verify & Sign In →";
+            }
+        });
+    </script>
+</body>
+</html>

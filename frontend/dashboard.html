@@ -1,0 +1,304 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zero Trust IAM | Security Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif}
+body{background:#091321;color:#eaf0ff;min-height:100vh}
+header{height:76px;border-bottom:1px solid #263750;display:flex;align-items:center;justify-content:space-between;padding:0 5%;background:#0e1b2e}
+.brand{font-size:19px;font-weight:700;letter-spacing:.4px}
+.brand span{color:#62d6fa}
+.user{display:flex;align-items:center;gap:14px;color:#a9bad3;font-size:13px}
+button{border:1px solid #3b506d;border-radius:8px;padding:10px 14px;color:#eaf0ff;background:#16263d;cursor:pointer}
+button:hover{border-color:#62d6fa}
+main{max-width:1200px;margin:36px auto;padding:0 24px}
+.eyebrow{font-size:12px;color:#63d6fa;text-transform:uppercase;letter-spacing:2px;margin-bottom:10px}
+h1{font-size:30px;margin-bottom:8px}
+.subtitle{color:#9aacc8;font-size:14px;line-height:1.6}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:28px 0}
+.card{background:#101f34;border:1px solid #263a55;border-radius:14px;padding:22px}
+.card-label{color:#9aacc8;font-size:13px;margin-bottom:14px}
+.metric{font-size:32px;font-weight:700}
+.metric-note{color:#91a6c4;font-size:12px;margin-top:8px}
+.panel{background:#101f34;border:1px solid #263a55;border-radius:14px;padding:24px;margin-bottom:22px}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}
+h2{font-size:18px}
+.field{display:flex;gap:12px;margin-top:18px}
+input{flex:1;min-width:0;background:#091626;border:1px solid #354761;border-radius:8px;padding:13px;color:white;outline:none}
+input:focus{border-color:#62d6fa}
+.primary{background:linear-gradient(90deg,#62d6fa,#80aaff);color:#081524;border:0;font-weight:700}
+#status{color:#a9bad3;font-size:13px;margin-top:15px;line-height:1.6;overflow-wrap:anywhere}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:14px 10px;border-bottom:1px solid #283a52}
+th{color:#91a6c4;font-weight:500}
+td{color:#e0eaff}
+.pill{display:inline-block;padding:5px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.deny{color:#ff9999;background:#3b202a}
+.allow{color:#86f0c9;background:#14352f}
+.other{color:#ffd48a;background:#3b3020}
+.empty{color:#9aacc8;padding:22px 0;font-size:13px}
+.table-wrap{overflow-x:auto}
+footer{text-align:center;color:#7085a3;font-size:12px;padding:28px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.field{flex-direction:column}header{padding:0 18px}.brand{font-size:15px}main{padding:0 16px;margin:24px auto}.panel{padding:17px}h1{font-size:25px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><span>⬡</span> ZERO TRUST IAM</div>
+  <div class="user">
+    <span id="userLabel">Verifying session...</span>
+    <button id="logoutButton">Log out</button>
+  </div>
+</header>
+
+<main>
+  <p class="eyebrow">Security operations</p>
+  <h1>Security Dashboard</h1>
+  <p class="subtitle">Monitor target risk, run authorized network scans, and review access decisions.</p>
+
+  <section class="grid">
+    <div class="card">
+      <p class="card-label">Scans recorded</p>
+      <p class="metric" id="scanCount">—</p>
+      <p class="metric-note">Saved scan history</p>
+    </div>
+    <div class="card">
+      <p class="card-label">Latest risk score</p>
+      <p class="metric" id="latestRisk">—</p>
+      <p class="metric-note">Rule-based score out of 100</p>
+    </div>
+    <div class="card">
+      <p class="card-label">Latest access decision</p>
+      <p class="metric" id="latestDecision">—</p>
+      <p class="metric-note">Based on your risk policy</p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Network risk scan</h2>
+      <span class="pill other">Authorized targets only</span>
+    </div>
+    <p class="subtitle">Enter a hostname or IP address for a system you own or have permission to test.</p>
+    <form id="scanForm" class="field">
+      <input id="target" type="text" placeholder="e.g. 127.0.0.1" required>
+      <button class="primary" id="scanButton" type="submit">Run scan →</button>
+    </form>
+    <p id="status" role="status" aria-live="polite"></p>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Scan history</h2>
+      <button id="refreshButton" type="button">Refresh</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th><th>Target</th><th>Risk</th><th>Open ports</th><th>Decision</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody">
+          <tr><td colspan="5" class="empty">Loading scan history...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Latest scan details</h2>
+    <div id="scanDetails" class="empty">Run a scan to see detected open ports and service details.</div>
+  </section>
+</main>
+
+<footer>Zero Trust Identity & Access Management Proxy · Never Trust, Always Verify</footer>
+
+<script>
+const API = "http://127.0.0.1:5000";
+const token = sessionStorage.getItem("zt_token");
+const username = sessionStorage.getItem("zt_username");
+const role = sessionStorage.getItem("zt_role");
+
+const userLabel = document.getElementById("userLabel");
+const statusBox = document.getElementById("status");
+const scanButton = document.getElementById("scanButton");
+
+if (!token) {
+  window.location.replace("index.html");
+} else {
+  userLabel.textContent = `${username || "User"} · ${role || "user"}`;
+}
+
+document.getElementById("logoutButton").addEventListener("click", () => {
+  sessionStorage.removeItem("zt_token");
+  sessionStorage.removeItem("zt_username");
+  sessionStorage.removeItem("zt_role");
+  window.location.replace("index.html");
+});
+
+async function apiRequest(path, options = {}) {
+  const response = await fetch(API + path, {
+    ...options,
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      ...(options.body ? {"Content-Type": "application/json"} : {}),
+      ...(options.headers || {})
+    }
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (response.status === 401) {
+    sessionStorage.clear();
+    window.location.replace("index.html");
+    throw new Error("Your session expired. Please sign in again.");
+  }
+
+  if (!response.ok) {
+    throw new Error(data.error || "The request failed.");
+  }
+
+  return data;
+}
+
+function safeText(value) {
+  return String(value ?? "");
+}
+
+function makeCell(value) {
+  const cell = document.createElement("td");
+  cell.textContent = safeText(value);
+  return cell;
+}
+
+function decisionPill(value) {
+  const pill = document.createElement("span");
+  pill.className = "pill " +
+    (value === "DENY" ? "deny" : value === "ALLOW" ? "allow" : "other");
+  pill.textContent = safeText(value);
+  return pill;
+}
+
+async function loadHistory() {
+  const body = document.getElementById("historyBody");
+  body.replaceChildren();
+
+  try {
+    const data = await apiRequest("/api/scans");
+    const scans = data.scans || [];
+
+    document.getElementById("scanCount").textContent = scans.length;
+
+    if (!scans.length) {
+      const row = document.createElement("tr");
+      const cell = makeCell("No scans recorded yet.");
+      cell.colSpan = 5;
+      cell.className = "empty";
+      row.appendChild(cell);
+      body.appendChild(row);
+      document.getElementById("latestRisk").textContent = "—";
+      document.getElementById("latestDecision").textContent = "—";
+      return;
+    }
+
+    document.getElementById("latestRisk").textContent =
+      scans[0].risk_score + "/100";
+    document.getElementById("latestDecision").textContent =
+      scans[0].decision;
+
+    for (const scan of scans) {
+      const row = document.createElement("tr");
+      row.append(
+        makeCell(scan.id),
+        makeCell(scan.target),
+        makeCell(scan.risk_score + "/100"),
+        makeCell(scan.total_open_ports),
+      );
+
+      const decisionCell = document.createElement("td");
+      decisionCell.appendChild(decisionPill(scan.decision));
+      row.appendChild(decisionCell);
+      body.appendChild(row);
+    }
+  } catch (error) {
+    const row = document.createElement("tr");
+    const cell = makeCell(error.message);
+    cell.colSpan = 5;
+    cell.className = "empty";
+    row.appendChild(cell);
+    body.appendChild(row);
+  }
+}
+
+document.getElementById("scanForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const target = document.getElementById("target").value.trim();
+  if (!target) return;
+
+  scanButton.disabled = true;
+  scanButton.textContent = "Scanning...";
+  statusBox.textContent = "Running scan. This may take a little while.";
+  statusBox.style.color = "#a9bad3";
+
+  try {
+    const result = await apiRequest("/api/scan", {
+      method: "POST",
+      body: JSON.stringify({target})
+    });
+
+    statusBox.style.color =
+      result.decision === "DENY" ? "#ff9999" : "#86f0c9";
+    statusBox.textContent =
+      `Scan saved as #${result.scan_id}. Risk: ${result.risk_score}/100. ` +
+      `Decision: ${result.decision}. ${result.reason}`;
+
+    const details = document.getElementById("scanDetails");
+    details.replaceChildren();
+
+    const summary = document.createElement("p");
+    summary.textContent =
+      `${result.target} — ${result.total_open_ports} open port(s) detected.`;
+    details.appendChild(summary);
+
+    if (result.open_ports.length) {
+      const list = document.createElement("ul");
+      list.style.margin = "16px 0 0 22px";
+      list.style.lineHeight = "1.9";
+
+      for (const port of result.open_ports) {
+        const item = document.createElement("li");
+        item.textContent =
+          `Port ${port.port}/${port.protocol} — ${port.service} — ${port.version}`;
+        list.appendChild(item);
+      }
+      details.appendChild(list);
+    } else {
+      const empty = document.createElement("p");
+      empty.textContent = "No open ports were reported by the scan.";
+      empty.style.marginTop = "12px";
+      details.appendChild(empty);
+    }
+
+    await loadHistory();
+  } catch (error) {
+    statusBox.style.color = "#ff9999";
+    statusBox.textContent = error.message;
+  } finally {
+    scanButton.disabled = false;
+    scanButton.textContent = "Run scan →";
+  }
+});
+
+document.getElementById("refreshButton").addEventListener("click", loadHistory);
+
+if (token) {
+  loadHistory();
+}
+</script>
+</body>
+</html>

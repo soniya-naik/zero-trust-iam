@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Local databases and logs
+*.db
+*.sqlite3
+*.log
+
+# System files
+.DS_Store
+Thumbs.db
