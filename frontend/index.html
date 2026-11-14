@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zero Trust IAM | Secure Access</title>
+    <title>Zero Trust IAM | Secure Login</title>
 
     <style>
         * {
@@ -20,61 +20,59 @@
             align-items: center;
             justify-content: center;
             padding: 24px;
-            color: #eaf0ff;
-            background:
-                radial-gradient(ellipse at top left, #193c70 0%, transparent 45%),
-                linear-gradient(135deg, #07111f, #101c32 60%, #07111f);
+            background: #f3f6fb;
+            color: #1e293b;
         }
 
         .login-card {
             width: 100%;
-            max-width: 440px;
+            max-width: 430px;
             padding: 38px;
-            border: 1px solid #30425f;
-            border-radius: 20px;
-            background: rgba(15, 28, 49, 0.96);
-            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(30, 64, 120, 0.08);
         }
 
         .brand {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 13px;
             margin-bottom: 32px;
         }
 
         .brand-icon {
-            display: grid;
-            place-items: center;
             width: 48px;
             height: 48px;
-            border-radius: 14px;
-            background: #173d68;
-            color: #64d9ff;
-            font-size: 25px;
+            display: grid;
+            place-items: center;
+            border-radius: 10px;
+            background: #eaf1ff;
+            color: #2563eb;
+            font-size: 27px;
         }
 
         .brand h2 {
-            font-size: 19px;
+            font-size: 18px;
+            color: #172554;
             letter-spacing: 0.3px;
         }
 
         .brand p {
             margin-top: 4px;
-            color: #9aacc8;
             font-size: 12px;
+            color: #64748b;
         }
 
         .status {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 8px 11px;
+            padding: 8px 12px;
             margin-bottom: 22px;
-            border: 1px solid #24544f;
-            border-radius: 30px;
-            color: #8bf0ce;
-            background: #102c2c;
+            border-radius: 5px;
+            background: #eff6ff;
+            color: #2563eb;
             font-size: 12px;
         }
 
@@ -82,18 +80,18 @@
             width: 7px;
             height: 7px;
             border-radius: 50%;
-            background: #55e0b2;
+            background: #16a34a;
         }
 
         h1 {
             margin-bottom: 10px;
-            font-size: 30px;
-            letter-spacing: -0.7px;
+            font-size: 29px;
+            color: #172554;
         }
 
         .subtitle {
             margin-bottom: 28px;
-            color: #9aacc8;
+            color: #64748b;
             font-size: 14px;
             line-height: 1.6;
         }
@@ -101,52 +99,56 @@
         label {
             display: block;
             margin-bottom: 8px;
-            color: #dce6f7;
+            color: #334155;
             font-size: 13px;
+            font-weight: 600;
         }
 
         input {
             width: 100%;
             padding: 13px 14px;
-            margin-bottom: 19px;
-            border: 1px solid #354761;
-            border-radius: 9px;
+            margin-bottom: 20px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
             outline: none;
-            color: white;
-            background: #0b1729;
+            background: #ffffff;
+            color: #1e293b;
             font-size: 14px;
         }
 
+        input::placeholder {
+            color: #94a3b8;
+        }
+
         input:focus {
-            border-color: #53bfff;
-            box-shadow: 0 0 0 3px rgba(83, 191, 255, 0.12);
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
         }
 
         button {
             width: 100%;
             padding: 14px;
             border: none;
-            border-radius: 9px;
-            color: #061424;
-            background: linear-gradient(90deg, #65d9f8, #7aa8ff);
+            border-radius: 7px;
+            background: #2563eb;
+            color: #ffffff;
             font-size: 15px;
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s, opacity 0.2s;
+            transition: background 0.2s;
         }
 
         button:hover {
-            transform: translateY(-1px);
-            opacity: 0.92;
+            background: #1d4ed8;
         }
 
         button:disabled {
-            opacity: 0.6;
+            opacity: 0.65;
             cursor: wait;
         }
 
         #message {
-            margin-top: 16px;
+            margin-top: 15px;
             font-size: 13px;
             line-height: 1.5;
             overflow-wrap: anywhere;
@@ -155,20 +157,27 @@
         .security-note {
             margin-top: 27px;
             padding-top: 20px;
-            border-top: 1px solid #293951;
-            color: #91a3bd;
+            border-top: 1px solid #e2e8f0;
+            color: #64748b;
             font-size: 12px;
-            line-height: 1.7;
+            line-height: 1.8;
+            text-align: center;
+        }
+
+        .footer {
+            margin-top: 20px;
+            color: #94a3b8;
+            font-size: 11px;
             text-align: center;
         }
 
         @media (max-width: 480px) {
             .login-card {
-                padding: 26px 22px;
+                padding: 27px 22px;
             }
 
             h1 {
-                font-size: 26px;
+                font-size: 25px;
             }
         }
     </style>
@@ -176,6 +185,7 @@
 
 <body>
     <main class="login-card">
+
         <div class="brand">
             <div class="brand-icon">⬡</div>
             <div>
@@ -190,11 +200,13 @@
         </div>
 
         <h1>Welcome back</h1>
+
         <p class="subtitle">
             Sign in to verify your identity and access the security dashboard.
         </p>
 
         <form id="loginForm">
+
             <label for="username">Username</label>
             <input
                 id="username"
@@ -220,6 +232,7 @@
             </button>
 
             <p id="message" role="status" aria-live="polite"></p>
+
         </form>
 
         <div class="security-note">
@@ -227,6 +240,11 @@
             <br>
             Never Trust, Always Verify.
         </div>
+
+        <div class="footer">
+            Zero Trust Identity & Access Management Proxy
+        </div>
+
     </main>
 
     <script>
@@ -238,7 +256,7 @@
             event.preventDefault();
 
             message.textContent = "";
-            message.style.color = "#ffb7b7";
+            message.style.color = "#dc2626";
             button.disabled = true;
             button.textContent = "Verifying identity...";
 
@@ -263,12 +281,11 @@
                     throw new Error(data.error || "Login failed.");
                 }
 
-                // Keep the token for this browser tab only.
                 sessionStorage.setItem("zt_token", data.token);
                 sessionStorage.setItem("zt_username", data.user.username);
                 sessionStorage.setItem("zt_role", data.user.role);
 
-                message.style.color = "#8bf0ce";
+                message.style.color = "#16a34a";
                 message.textContent = "Identity verified. Opening dashboard...";
 
                 window.location.href = "dashboard.html";
