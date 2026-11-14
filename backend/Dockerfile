@@ -11,4 +11,4 @@ COPY . .
 
 EXPOSE 10000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:10000", "app:app"]
+CMD ["sh", "-c", "python -c 'from database import create_tables; create_tables(); from app import init_db; init_db()' && exec gunicorn --bind 0.0.0.0:${PORT:-10000} app:app"]
